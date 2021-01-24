@@ -13,8 +13,8 @@ import java.awt.event.ComponentListener;
  */
 
 public class MainWindow extends JFrame {
-    private static final int WIN_WIDTH = 500;
-    private static final int WIN_HEIGHT = 555;
+    private static final int WIN_SIZE = 500;
+    private static final int BTN_HEIGHT = 55;
     private static final int WIN_POSX = 650;
     private static final int WIN_POSY = 250;
 
@@ -23,7 +23,7 @@ public class MainWindow extends JFrame {
 
     MainWindow() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(WIN_WIDTH, WIN_HEIGHT);
+        setSize(WIN_SIZE, WIN_SIZE + BTN_HEIGHT);
         setLocation(WIN_POSX, WIN_POSY);
         setTitle("Игра: Крестики-Нолики");
         setResizable(false);
@@ -68,6 +68,7 @@ public class MainWindow extends JFrame {
         panelBottom.setLayout(new GridLayout(1, 2));
         panelBottom.add(btnStartGame);
         panelBottom.add(btnExit);
+        panelBottom.setSize(this.getWidth(), BTN_HEIGHT);
         add(panelBottom, BorderLayout.SOUTH);
 
         add(gameMap);
@@ -75,6 +76,14 @@ public class MainWindow extends JFrame {
     }
 
     void startNewGame(int mode, int fieldSizeX, int fieldSizeY, int winLength) {
+        if (fieldSizeX > fieldSizeY){
+            setSize(WIN_SIZE, WIN_SIZE * fieldSizeY / fieldSizeX + BTN_HEIGHT);
+        } else if (fieldSizeX < fieldSizeY){
+            setSize(WIN_SIZE * fieldSizeX / fieldSizeY, WIN_SIZE + BTN_HEIGHT);
+        } else {
+            setSize(WIN_SIZE, WIN_SIZE + BTN_HEIGHT);
+        }
+        revalidate();
         gameMap.startNewGame(mode, fieldSizeX, fieldSizeY, winLength);
     }
 

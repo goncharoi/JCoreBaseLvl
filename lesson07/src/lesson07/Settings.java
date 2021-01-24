@@ -21,14 +21,16 @@ public class Settings extends JFrame {
     private static final int MIN_FIELD_LENGTH = 3;
     private static final int MAX_FIELD_LENGTH = 10;
 
-    private static final String FIELD_SIZE_TEXT_PREFIX = "Размер поля: ";
+    private static final String FIELD_SIZE_TEXT_PREFIX_X = "Размер поля по X: ";
+    private static final String FIELD_SIZE_TEXT_PREFIX_Y = "Размер поля по Y: ";
     private static final String WIN_LENGTH_TEXT_PREFIX = "Выигрышная длина: ";
 
     private MainWindow mainWindow;
     private JRadioButton humVsAI;
     private JRadioButton humVsHum;
     private JSlider sliderWinLen;
-    private JSlider sliderFieldSize;
+    private JSlider sliderFieldSizeX;
+    private JSlider sliderFieldSizeY;
 
     Settings(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -38,7 +40,7 @@ public class Settings extends JFrame {
         setResizable(false);
         setTitle("Настройки новой игры");
 
-        setLayout(new GridLayout(10,1));
+        setLayout(new GridLayout(12,1));
         addGameModeSettings();
         addFieldSizeControl();
 
@@ -73,16 +75,26 @@ public class Settings extends JFrame {
     }
 
     private void addFieldSizeControl() {
-        JLabel lbFieldSize = new JLabel(FIELD_SIZE_TEXT_PREFIX + MIN_FIELD_LENGTH);
+        JLabel lbFieldSizeX = new JLabel(FIELD_SIZE_TEXT_PREFIX_X + MIN_FIELD_LENGTH);
+        JLabel lbFieldSizeY = new JLabel(FIELD_SIZE_TEXT_PREFIX_Y + MIN_FIELD_LENGTH);
         JLabel lbWinLength = new JLabel(WIN_LENGTH_TEXT_PREFIX + MIN_WIN_LENGTH);
 
-        sliderFieldSize = new JSlider(MIN_FIELD_LENGTH, MAX_FIELD_LENGTH, MIN_FIELD_LENGTH);
-        sliderFieldSize.addChangeListener(new ChangeListener() {
+        sliderFieldSizeX = new JSlider(MIN_FIELD_LENGTH, MAX_FIELD_LENGTH, MIN_FIELD_LENGTH);
+        sliderFieldSizeX.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                int currentValue = sliderFieldSize.getValue();
-                lbFieldSize.setText(FIELD_SIZE_TEXT_PREFIX + currentValue);
-                sliderWinLen.setMaximum(currentValue);
+                int currentValue = sliderFieldSizeX.getValue();
+                lbFieldSizeX.setText(FIELD_SIZE_TEXT_PREFIX_X + currentValue);
+                sliderWinLen.setMaximum(Math.max(sliderFieldSizeX.getValue(), sliderFieldSizeY.getValue()));
+            }
+        });
+        sliderFieldSizeY = new JSlider(MIN_FIELD_LENGTH, MAX_FIELD_LENGTH, MIN_FIELD_LENGTH);
+        sliderFieldSizeY.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int currentValue = sliderFieldSizeY.getValue();
+                lbFieldSizeY.setText(FIELD_SIZE_TEXT_PREFIX_Y + currentValue);
+                sliderWinLen.setMaximum(Math.max(sliderFieldSizeX.getValue(), sliderFieldSizeY.getValue()));
             }
         });
 
@@ -95,8 +107,10 @@ public class Settings extends JFrame {
         });
 
         add(new JLabel("Выберите размер поля"));
-        add(lbFieldSize);
-        add(sliderFieldSize);
+        add(lbFieldSizeX);
+        add(sliderFieldSizeX);
+        add(lbFieldSizeY);
+        add(sliderFieldSizeY);
         add(new JLabel("Выберите выигрышную позицию"));
         add(lbWinLength);
         add(sliderWinLen);
@@ -114,10 +128,7 @@ public class Settings extends JFrame {
             throw new RuntimeException("Неизвестный режим игры");
         }
 
-        int fieldSize = sliderFieldSize.getValue();
-        int winLen = sliderWinLen.getValue();
-
-        mainWindow.startNewGame(gameMode, fieldSize, fieldSize, winLen);
+        mainWindow.startNewGame(gameMode, sliderFieldSizeX.getValue(), sliderFieldSizeY.getValue(), sliderWinLen.getValue());
         setVisible(false);
     }
 
